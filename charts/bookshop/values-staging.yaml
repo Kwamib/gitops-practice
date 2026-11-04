@@ -1,7 +1,8 @@
 # Staging: one copy, a name that says it isn't the real shop, and the next release first.
 replicas: 1
 image:
-  tag: "1.28"
+  tag: "1.29"
 shop:
   name: The Bookshop (staging)
-  version: "1"
+  version: "2"
+  banner: Free delivery on every order this week.
