@@ -12,6 +12,9 @@ spec:
       app: {{ .Chart.Name }}
   template:
     metadata:
+      annotations:
+        # Changes whenever the page changes, so a new page rolls the pods.
+        checksum/page: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
         {{- include "bookshop.labels" . | nindent 8 }}
     spec:
