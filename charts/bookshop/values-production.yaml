@@ -1,0 +1,5 @@
+# Production: what the real shop runs. A release reaches here only after staging.
+image:
+  tag: "1.28"
+shop:
+  version: "1"

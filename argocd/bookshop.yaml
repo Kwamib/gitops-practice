@@ -1,4 +1,4 @@
-# The bookshop, deployed from this repository's Helm chart (Lesson 6). Lesson 3 used apps/bookshop.
+# Production: the real bookshop, from the Helm chart with production's values (Lesson 7).
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -14,6 +14,7 @@ spec:
       releaseName: bookshop
       valueFiles:
         - values.yaml
+        - values-production.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: bookshop
