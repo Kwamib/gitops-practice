@@ -1,0 +1,11 @@
+# A stable address for the bookshop pods, inside the cluster.
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookshop
+spec:
+  selector:
+    app: bookshop
+  ports:
+    - port: 80
+      targetPort: 80
