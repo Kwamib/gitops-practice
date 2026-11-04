@@ -1,4 +1,4 @@
-# Lesson 3: the bookshop, deployed from this repository's apps/bookshop folder.
+# The bookshop, deployed from this repository's Helm chart (Lesson 6). Lesson 3 used apps/bookshop.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -9,7 +9,11 @@ spec:
   source:
     repoURL: https://github.com/Kwamib/gitops-practice.git
     targetRevision: main
-    path: apps/bookshop
+    path: charts/bookshop
+    helm:
+      releaseName: bookshop
+      valueFiles:
+        - values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: bookshop
