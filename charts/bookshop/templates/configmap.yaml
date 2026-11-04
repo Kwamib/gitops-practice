@@ -1,0 +1,10 @@
+# The home page, from files/index.html, with the shop's settings filled in.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-page
+  labels:
+    {{- include "bookshop.labels" . | nindent 4 }}
+data:
+  index.html: |
+    {{- tpl (.Files.Get "files/index.html") . | nindent 4 }}

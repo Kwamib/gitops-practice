@@ -1,0 +1,5 @@
+# Staging: one copy, and a name that says it isn't the real shop.
+replicas: 1
+shop:
+  name: The Bookshop (staging)
+  version: "2-rc"

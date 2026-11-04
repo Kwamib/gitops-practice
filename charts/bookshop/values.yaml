@@ -1,0 +1,19 @@
+# Settings for the bookshop chart. Override any of them with -f FILE or --set.
+
+replicas: 2
+
+image:
+  repository: nginx
+  tag: "1.28"
+
+shop:
+  name: The Bookshop
+  headline: Books for people who run things.
+  version: "1"
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 16Mi
+  limits:
+    memory: 64Mi
