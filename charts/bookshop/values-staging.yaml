@@ -1,5 +1,7 @@
-# Staging: one copy, and a name that says it isn't the real shop.
+# Staging: one copy, a name that says it isn't the real shop, and the next release first.
 replicas: 1
+image:
+  tag: "1.28"
 shop:
   name: The Bookshop (staging)
-  version: "2-rc"
+  version: "1"

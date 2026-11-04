@@ -1,0 +1,26 @@
+# Staging: the same chart, with staging's values. Changes land here first (Lesson 7).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bookshop-staging
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Kwamib/gitops-practice.git
+    targetRevision: main
+    path: charts/bookshop
+    helm:
+      releaseName: bookshop
+      valueFiles:
+        - values.yaml
+        - values-staging.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: bookshop-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
