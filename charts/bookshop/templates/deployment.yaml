@@ -23,6 +23,15 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
             - containerPort: 80
+          {{- if .Values.db.encryptedPassword }}
+          env:
+            # From the Secret the Sealed Secrets controller makes (Lesson 10).
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-db
+                  key: password
+          {{- end }}
           volumeMounts:
             - name: page
               mountPath: /usr/share/nginx/html

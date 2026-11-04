@@ -18,3 +18,6 @@ resources:
     memory: 16Mi
   limits:
     memory: 64Mi
+
+db:
+  encryptedPassword: ""   # from kubeseal --raw, for this environment's namespace; empty means none
