@@ -1,0 +1,21 @@
+# The root Application: it manages every Application in the argocd/ folder.
+# Apply it once, by hand: kubectl apply -f bootstrap/root.yaml
+# From then on, adding, changing or removing a file in argocd/ is how apps change.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Kwamib/gitops-practice.git
+    targetRevision: main
+    path: argocd
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
