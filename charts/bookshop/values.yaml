@@ -10,6 +10,7 @@ shop:
   name: The Bookshop
   headline: Books for people who keep things running.
   version: "1"
+  banner: ""        # a line across the top of the page; empty means none
 
 resources:
   requests:

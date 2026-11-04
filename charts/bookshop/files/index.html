@@ -58,6 +58,8 @@
          font: 15px/1 -apple-system, "Segoe UI", sans-serif; }
   .price { font-weight: 700; }
   .stock { background: var(--accent-soft); color: var(--accent); padding: 5px 10px; border-radius: 999px; font-size: 13px; }
+  .banner { background: var(--accent); color: #fff; text-align: center; padding: 10px 20px;
+            font: 600 15px/1.4 -apple-system, "Segoe UI", sans-serif; }
   footer { border-top: 1px solid var(--line); color: var(--muted);
            font: 14px/1.5 -apple-system, "Segoe UI", sans-serif; }
   footer .wrap { display: flex; justify-content: space-between; gap: 16px; padding: 20px; flex-wrap: wrap; }
@@ -73,6 +75,9 @@
 </style>
 </head>
 <body>
+{{- if .Values.shop.banner }}
+<div class="banner">{{ .Values.shop.banner }}</div>
+{{- end }}
 <header>
   <div class="wrap bar">
     <div class="brand"><span class="mark">{{ .Values.shop.name | trimPrefix "The " | trunc 1 }}</span> {{ .Values.shop.name }}</div>
