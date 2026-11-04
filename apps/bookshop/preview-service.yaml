@@ -1,0 +1,11 @@
+# A second way in, for previewing the shop. Removed again in this lesson.
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookshop-preview
+spec:
+  selector:
+    app: bookshop
+  ports:
+    - port: 8080
+      targetPort: 80
