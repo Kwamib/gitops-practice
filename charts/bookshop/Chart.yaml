@@ -1,0 +1,6 @@
+apiVersion: v2
+name: bookshop
+description: The bookshop website, for the Argo CD and Monitoring tracks on kwamib.dev
+type: application
+version: 0.1.0      # the chart's own version
+appVersion: "1"     # the version of the shop it deploys

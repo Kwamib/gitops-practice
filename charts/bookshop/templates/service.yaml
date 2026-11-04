@@ -1,0 +1,13 @@
+# A stable address for the bookshop pods, inside the cluster.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "bookshop.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: {{ .Chart.Name }}
+  ports:
+    - port: 80
+      targetPort: 80
