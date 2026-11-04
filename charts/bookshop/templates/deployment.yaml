@@ -26,12 +26,6 @@ spec:
           volumeMounts:
             - name: page
               mountPath: /usr/share/nginx/html
-          lifecycle:
-            preStop:
-              # Keep answering for a few seconds after being told to stop, while the
-              # Service catches up and stops sending this pod new requests.
-              exec:
-                command: ["sleep", "5"]
           readinessProbe:
             httpGet:
               path: /
