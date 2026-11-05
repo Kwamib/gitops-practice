@@ -1,2 +1,3 @@
 .argocd-admin
 .sealed-secrets-key.yaml
+.grafana-admin

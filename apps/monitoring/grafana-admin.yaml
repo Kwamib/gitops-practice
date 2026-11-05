@@ -1,0 +1,18 @@
+# Grafana's admin login (Monitoring track, Lesson 1), sealed for the monitoring namespace.
+# The real password is in .grafana-admin, which never goes in Git.
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: grafana-admin
+  namespace: monitoring
+spec:
+  encryptedData:
+    admin-password: AgByren58Zgru6fivislyAkQmCLxGie1BwpwoBgal1GIkemrhl1Iox9fYvEuaeSrcvhoscOOHTT5jbrG5QWTBGixWcRdRfU5UF/ve4h0OZYSt14FXaQ7NsOApSUtanZ4CnV0Ljmj5WPY8t/hnUHnp3hwcdeCactWwhInCgTuaTS5BWP1H5XLF75I1yTzYoeFOHvMQqKMuAkjLak1xDewqn18dg7+lTch+/0JEGCE5tC95O4g30xFFJ82/zIMfXI2FjbVJHHHlRnn2Qt5IQ6lNpE73ftUX1tEQ8wmjfUJC66PheTxmWBvlodA0j4z3WYtVo2Jz0uqr3SteDceB1vNPJ5JOZoTNq2HwhkiabBUA6oyeBZhq+QZb9/CclG6wg6v/FGM6ti0vHH43XoZnjK3YJaHjCmx98TDqjZ67Plgg3J7vDPmnvUujMLWWIWPViFdUHuXB1VsRLPrCimr8ATAuMigbMXZLJVXH9zjLzDe2iXg5YyfvHr0vq5c7qTV5HhMpkjPlE+76353Z94FclBODWE43YkZ5UxbQu0+Kns3ltFh5F1D3yBjJmYcOPjZWWCMmRqMJRHMR9pc17Vnr1lHw4VZWpDSDes8YVdtkPYQopLBCpiLVyJVb9LATbUEtFPT4hub//uLq7/1wO+C5h6OSEkbyfg8qY0CW8Q7p+7ipmLlmEzowMsrGyW8/rFzKbHg+BdOP1U/eTNS8xEM8kiK+94QLPtTL6IM0PH3JnZR8+RdMA==
+    admin-user: AgAPBzC1eL52NEG6PrIVhB2zhK5ftP8yuvhrPyvUQHn52kAOwWRi34yXEz2ywqWiLea5wN7k7tXMtnIXorG7CHZfIK9dGVt08LxtsRtM6m9QsuucEMnZFf7mr9ORm1n4M9SDQTjKdYiAZKKyhJDdjP6ZPkmzIh9UlcmshX31kLEHz3tig5UWc/gO9f9VUR8NfQ31+NBYxxfxI8Xb4X/7TpBs68zwGZ58XcdMLjAasnoXWg1evvQQlsTAFTa3xZjSfd9HoXVjFHNTAjR5kRNNzoym1Y/E21YEYRRrDDlzMikLzScPJaAma9xxL5Eh41NffWV1s8vjxEXed0vfoA7s3jaSb/GJhpZNRKsgOBgzqfZhABiVtgEO9SYtFCdB1CMwNknPxCzoVCRbOaWaYtqoky5iaRRFaICYaVWh87tBF0pL0TolJjHIzfSXsrDYYFI1YEe7Ay2/B9H+SU2SWxbO7DvOXmHahwX2/grDcSpsYrm+WxZiQK7FLcTfgkaKAk8PNKit3BFHtt0RoMXbY+++5Gv49Hyces6TVUZCsUByTMfP3jRCpkhe7p4hkemarN3Wpk/CxayhHbj/y9khxn677wp6P3sDkxvzv0q53E3UfWJ37ZpQojc6IM9/ZnjH4nGzKmPxWI02A+f/SZ3WvKl0jt5xc3EFmRMneIgxFF50cl3Zm3qUjmYUHmMh85NO/r/WPT5GLP5cjw==
+  template:
+    metadata:
+      creationTimestamp: null
+      name: grafana-admin
+      namespace: monitoring
