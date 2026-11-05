@@ -21,6 +21,26 @@ spec:
             existingSecret: grafana-admin
             userKey: admin-user
             passwordKey: admin-password
+        # kind keeps these control-plane parts unreachable (Lesson 1), so their targets
+        # are always down and their alerts always fire. Stop scraping them (Lesson 7).
+        kubeEtcd:
+          enabled: false
+        kubeControllerManager:
+          enabled: false
+        kubeScheduler:
+          enabled: false
+        kubeProxy:
+          enabled: false
+        defaultRules:
+          rules:
+            # And drop the alert rules about them.
+            etcd: false
+            kubeControllerManager: false
+            kubeProxy: false
+            kubeSchedulerAlerting: false
+          disabled:
+            # kind's nodes don't sync their clocks; nothing to act on, here.
+            NodeClockNotSynchronising: true
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
