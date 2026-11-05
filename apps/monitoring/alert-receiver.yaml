@@ -1,0 +1,63 @@
+# A tiny web server that prints every notification Alertmanager sends it (Monitoring track, Lesson 8).
+# It stands in for Slack, email or a pager, so the lesson works without any outside account.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alert-receiver
+  labels:
+    app: alert-receiver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alert-receiver
+  template:
+    metadata:
+      labels:
+        app: alert-receiver
+    spec:
+      containers:
+        - name: receiver
+          image: python:3.13-alpine
+          command: ["python", "-u", "-c"]
+          args:
+            - |
+              # Print the parts of each notification a person would read, as one line of JSON.
+              import http.server, json
+              class Handler(http.server.BaseHTTPRequestHandler):
+                  def do_POST(self):
+                      body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+                      print(json.dumps({
+                          "receiver": body["receiver"],
+                          "status": body["status"],
+                          "groupLabels": body["groupLabels"],
+                          "alerts": [{"alertname": a["labels"]["alertname"], "status": a["status"],
+                                      "instance": a["labels"].get("instance", ""),
+                                      "summary": a["annotations"].get("summary", "")} for a in body["alerts"]],
+                      }))
+                      self.send_response(200)
+                      self.end_headers()
+                  def log_message(self, *args):
+                      pass
+              http.server.HTTPServer(("", 8080), Handler).serve_forever()
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alert-receiver
+spec:
+  selector:
+    app: alert-receiver
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
