@@ -1,0 +1,20 @@
+{{- if .Values.metrics.enabled }}
+# nginx's built-in status page, for the exporter next to it (Monitoring track, Lesson 4).
+# Its own port, 8080, and only from inside the pod: the Service never sends traffic here.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-nginx-conf
+  labels:
+    {{- include "bookshop.labels" . | nindent 4 }}
+data:
+  status.conf: |
+    server {
+      listen 8080;
+      location /stub_status {
+        stub_status;
+        allow 127.0.0.1;
+        deny all;
+      }
+    }
+{{- end }}

@@ -15,6 +15,9 @@ spec:
       annotations:
         # Changes whenever the page changes, so a new page rolls the pods.
         checksum/page: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if .Values.metrics.enabled }}
+        checksum/nginx-conf: {{ include (print $.Template.BasePath "/nginx-conf.yaml") . | sha256sum }}
+        {{- end }}
       labels:
         {{- include "bookshop.labels" . | nindent 8 }}
     spec:
@@ -35,6 +38,11 @@ spec:
           volumeMounts:
             - name: page
               mountPath: /usr/share/nginx/html
+            {{- if .Values.metrics.enabled }}
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d/status.conf
+              subPath: status.conf
+            {{- end }}
           lifecycle:
             preStop:
               # Keep answering for a few seconds after being told to stop, while the
@@ -47,7 +55,24 @@ spec:
               port: 80
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+        {{- if .Values.metrics.enabled }}
+        # Reads nginx's status page and serves it as Prometheus metrics (Monitoring track, Lesson 4).
+        - name: exporter
+          image: "{{ .Values.metrics.image.repository }}:{{ .Values.metrics.image.tag }}"
+          args:
+            - --nginx.scrape-uri=http://localhost:8080/stub_status
+          ports:
+            - name: metrics
+              containerPort: 9113
+          resources:
+            {{- toYaml .Values.metrics.resources | nindent 12 }}
+        {{- end }}
       volumes:
         - name: page
           configMap:
             name: {{ .Release.Name }}-page
+        {{- if .Values.metrics.enabled }}
+        - name: nginx-conf
+          configMap:
+            name: {{ .Release.Name }}-nginx-conf
+        {{- end }}
