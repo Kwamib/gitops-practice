@@ -1,0 +1,17 @@
+# The Slack webhook address for Alertmanager (Monitoring track, Lesson 8), sealed for the
+# monitoring namespace. The real address is in .slack-webhook, which never goes in Git.
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: alertmanager-slack
+  namespace: monitoring
+spec:
+  encryptedData:
+    url: AgApt4aV7XnUXZXUdUNoMcaWbp6q2ChxE+2bMVSnkicYe0RjWUVpbKD6AWjD/Wt9K8fUDOBwupp9QxkEDRli4TAbUcYc09bIUjGAL7jQQEmFY6ivefoj6McyrxbuV7EnbCBVxxHkaoDOyKxaBgS0WwN05dE5lgP7UAKbKwzcnFrhrMZWn6lqCHIb+JtmkLQcwIrGVNxr+5aVghNjaOPdJz+/XiyGh1HvObVV0ILVZWjqE5VGzuRTBeXWWJZNdp21D7yvS3421pGAjy4iue7mieTT4qB65YhB7QxWKFKTVyTG22+0cqDMkY2trtEln8QwT0Q+ZJxfiCJwY4Wg12el7fvlDLHcOlm+aKGv4xc6hWy3y0KjwZVKv4ci7JwAS6ADsamdj0i+Gaz60nLAcBS0qpq0IodgjcG5pXtIGtX4qLSKC0zE+h7JVIWNjg71d4+/bplOwi93t6xnuvYgJhO6rA8YLInvMS1ONsKpPe8d2s2amIzJR+q9ZTX4GtLAXo1sfbyYXuB58qX33w9m/vrDGcxYazjxkg1tmk6QD4V7t3TDXufz2BhKC7hIAR84eyTSCvAJ3s7QnGtJqxjOdNFyYPCf7uLz5gWPcm3NLju78xSkPPZ5gGChKHxnMadwW+w93wItDcKQ9Cpyk+LraXUykI5y8dGnFVMRlTP/IPju0jO+LHqEwhTHtTtvgZIgigPrbPcPiYAWlaxNMisfnlTKQee5u8RnW65ihfsbrDiU4T3wFVhvTy3O3q0ZfvWdBMs75Nwg63ehqVkIcqUAfY9+IyBjTVMLBdnhAHrtTj8WyH8Zhos=
+  template:
+    metadata:
+      creationTimestamp: null
+      name: alertmanager-slack
+      namespace: monitoring
