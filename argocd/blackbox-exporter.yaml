@@ -1,0 +1,35 @@
+# The blackbox exporter (Monitoring track, Lesson 5): checks addresses from the outside,
+# the way a visitor would, and reports whether they worked and how long they took.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: blackbox-exporter
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: prometheus-blackbox-exporter
+    targetRevision: 11.20.2
+    helm:
+      releaseName: blackbox-exporter
+      valuesObject:
+        fullnameOverride: blackbox-exporter
+        config:
+          modules:
+            # Added to the chart's own modules, such as http_2xx: the page must say
+            # the banner, word for word, as well as answer.
+            http_bookshop_banner:
+              prober: http
+              timeout: 5s
+              http:
+                preferred_ip_protocol: ip4
+                fail_if_body_not_matches_regexp:
+                  - "Free delivery on every order this week"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
