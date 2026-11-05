@@ -21,6 +21,47 @@ spec:
             existingSecret: grafana-admin
             userKey: admin-user
             passwordKey: admin-password
+        # Where alerts go, how they're grouped, and what hides what (Lesson 8).
+        alertmanager:
+          config:
+            global:
+              resolve_timeout: 5m
+            route:
+              # Everything goes to the in-cluster receiver, unless a route below says otherwise.
+              receiver: alert-receiver
+              # One message per alert name and address: staging's problems separate from production's.
+              group_by: [alertname, instance]
+              group_wait: 30s       # wait this long after the first alert of a group, for others to join it
+              group_interval: 1m    # then send changes to the group at most this often
+              repeat_interval: 4h   # and remind about a group still firing this often
+              routes:
+                # Watchdog always fires and InfoInhibitor is machinery: nobody needs a message (Lesson 10 uses Watchdog).
+                - receiver: "null"
+                  matchers: ['alertname =~ "Watchdog|InfoInhibitor"']
+                # info is worth knowing, not worth a message (Lesson 7).
+                - receiver: "null"
+                  matchers: ['severity = "info"']
+            inhibit_rules:
+              # A shop that isn't answering doesn't have the right banner either: one cause, one message.
+              - source_matchers: ['alertname = "BookshopDown"']
+                target_matchers: ['alertname = "BookshopPageWrong"']
+                equal: [instance]
+              # The chart's defaults: a critical alert hides the warning about the same thing,
+              - source_matchers: ['severity = "critical"']
+                target_matchers: ['severity =~ "warning|info"']
+                equal: [namespace, alertname]
+              # and InfoInhibitor hides info alerts in its namespace.
+              - source_matchers: ['alertname = "InfoInhibitor"']
+                target_matchers: ['severity = "info"']
+                equal: [namespace]
+            receivers:
+              - name: "null"
+              - name: alert-receiver
+                webhook_configs:
+                  - url: http://alert-receiver.monitoring.svc:8080/
+                    send_resolved: true
+            templates:
+              - /etc/alertmanager/config/*.tmpl
         # kind keeps these control-plane parts unreachable (Lesson 1), so their targets
         # are always down and their alerts always fire. Stop scraping them (Lesson 7).
         kubeEtcd:
