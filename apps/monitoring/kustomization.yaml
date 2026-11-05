@@ -1,0 +1,16 @@
+# Monitoring's own files (Monitoring track), put together by Kustomize (Lesson 6).
+# Every file in this folder that should be applied is listed here: one left out is deleted.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - grafana-admin.yaml
+  - bookshop-probes.yaml
+configMapGenerator:
+  # Each dashboard file becomes a ConfigMap with the label Grafana's dashboard sidecar looks for.
+  - name: grafana-dashboard-bookshop
+    files:
+      - dashboards/bookshop.json
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
