@@ -34,4 +34,5 @@ metrics:
     limits:
       memory: 32Mi
   serviceMonitor:
-    labels: {}      # extra labels for the ServiceMonitor
+    labels:           # extra labels for the ServiceMonitor
+      release: monitoring   # kube-prometheus-stack's Prometheus only picks up ServiceMonitors with this
