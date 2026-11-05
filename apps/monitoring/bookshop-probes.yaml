@@ -1,0 +1,38 @@
+# Checks the bookshop from the outside (Monitoring track, Lesson 5), through the blackbox exporter.
+# The release label is what this cluster's Prometheus looks for, as with ServiceMonitors.
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: bookshop-up
+  labels:
+    release: monitoring
+spec:
+  jobName: bookshop-up
+  interval: 30s
+  module: http_2xx
+  prober:
+    url: blackbox-exporter.monitoring.svc:9115
+  targets:
+    staticConfig:
+      static:
+        - http://bookshop.bookshop.svc/
+        - http://bookshop.bookshop-staging.svc/
+        - http://bookshop.bookshop.svc/no-such-page
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata:
+  name: bookshop-banner
+  labels:
+    release: monitoring
+spec:
+  jobName: bookshop-banner
+  interval: 30s
+  module: http_bookshop_banner
+  prober:
+    url: blackbox-exporter.monitoring.svc:9115
+  targets:
+    staticConfig:
+      static:
+        - http://bookshop.bookshop.svc/
+        - http://bookshop.bookshop-staging.svc/
