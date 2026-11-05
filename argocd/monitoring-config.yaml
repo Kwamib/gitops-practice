@@ -1,0 +1,20 @@
+# Monitoring's own files (Monitoring track): the plain YAML in apps/monitoring,
+# such as Grafana's sealed admin login, applied to the monitoring namespace.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring-config
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Kwamib/gitops-practice.git
+    targetRevision: main
+    path: apps/monitoring
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
