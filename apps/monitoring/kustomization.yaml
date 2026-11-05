@@ -5,6 +5,7 @@ kind: Kustomization
 resources:
   - grafana-admin.yaml
   - bookshop-probes.yaml
+  - bookshop-rules.yaml
 configMapGenerator:
   # Each dashboard file becomes a ConfigMap with the label Grafana's dashboard sidecar looks for.
   - name: grafana-dashboard-bookshop

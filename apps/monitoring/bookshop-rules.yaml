@@ -1,0 +1,48 @@
+# Alert rules for the bookshop (Monitoring track, Lesson 7).
+# The release label is what this cluster's Prometheus looks for, as with ServiceMonitors.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: bookshop
+  labels:
+    release: monitoring
+spec:
+  groups:
+    - name: bookshop
+      rules:
+        - alert: BookshopDown
+          # The blackbox check (Lesson 5), for each environment's page. Not the missing-page target.
+          expr: probe_success{job="bookshop-up", instance=~".*svc/$"} == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "The bookshop isn't answering"
+            description: "{{ $labels.instance }} has failed its check for over a minute."
+        - alert: BookshopPageWrong
+          # The banner check: the page answers, but doesn't say what it should.
+          expr: probe_success{job="bookshop-banner"} == 0
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "The bookshop's page is wrong"
+            description: "{{ $labels.instance }} is answering without the banner it should have."
+        - alert: BookshopPodsMissing
+          # kube-state-metrics (Lesson 2): fewer pods available than the Deployment wants.
+          expr: kube_deployment_spec_replicas{deployment="bookshop"} > kube_deployment_status_replicas_available{deployment="bookshop"}
+          for: 3m
+          labels:
+            severity: warning
+          annotations:
+            summary: "The bookshop is short of pods"
+            description: "{{ $labels.namespace }}/{{ $labels.deployment }} has fewer pods available than it wants."
+        - alert: BookshopChecksMissing
+          # No check results at all: the blackbox exporter, or the Probe, has gone (Lesson 3's lesson).
+          expr: absent(probe_success{job="bookshop-up"})
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "The bookshop isn't being checked"
+            description: "There are no blackbox results for the bookshop, so BookshopDown can't fire."
