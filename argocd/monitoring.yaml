@@ -13,6 +13,14 @@ spec:
     targetRevision: 92.18.0
     helm:
       releaseName: monitoring
+      valuesObject:
+        grafana:
+          admin:
+            # Use the sealed login from apps/monitoring, rather than a password the
+            # chart makes up again every time Argo CD renders it.
+            existingSecret: grafana-admin
+            userKey: admin-user
+            passwordKey: admin-password
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
