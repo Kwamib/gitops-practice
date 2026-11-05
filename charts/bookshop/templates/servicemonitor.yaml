@@ -1,0 +1,19 @@
+{{- if .Values.metrics.enabled }}
+# Tells Prometheus to scrape the exporter on every bookshop pod (Monitoring track, Lesson 4).
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "bookshop.labels" . | nindent 4 }}
+    {{- with .Values.metrics.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  endpoints:
+    - port: metrics
+      interval: 30s
+{{- end }}

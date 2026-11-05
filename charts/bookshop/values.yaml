@@ -21,3 +21,17 @@ resources:
 
 db:
   encryptedPassword: ""   # from kubeseal --raw, for this environment's namespace; empty means none
+
+metrics:
+  enabled: true     # nginx's status page, an exporter next to nginx, and a ServiceMonitor
+  image:
+    repository: nginx/nginx-prometheus-exporter
+    tag: "1.5.3"
+  resources:
+    requests:
+      cpu: 5m
+      memory: 16Mi
+    limits:
+      memory: 32Mi
+  serviceMonitor:
+    labels: {}      # extra labels for the ServiceMonitor
