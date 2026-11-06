@@ -1,0 +1,70 @@
+# Grafana Alloy (Monitoring track, Lesson 9): follows every pod's log and sends the lines
+# to Loki. Alloy replaces Promtail, which reached its end of life in 2026.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: alloy
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: alloy
+    targetRevision: 1.15.0
+    helm:
+      releaseName: alloy
+      valuesObject:
+        # One copy for the whole cluster: it reads logs through the Kubernetes API, so it
+        # doesn't need a copy on every node, or access to the nodes' disks.
+        controller:
+          type: deployment
+          replicas: 1
+        alloy:
+          configMap:
+            content: |
+              // Find every pod in the cluster, and keep finding them as they come and go.
+              discovery.kubernetes "pods" {
+                role = "pod"
+              }
+        
+              // Turn what Kubernetes knows about each pod into the labels to search by.
+              discovery.relabel "pods" {
+                targets = discovery.kubernetes.pods.targets
+        
+                rule {
+                  source_labels = ["__meta_kubernetes_namespace"]
+                  target_label  = "namespace"
+                }
+                rule {
+                  source_labels = ["__meta_kubernetes_pod_name"]
+                  target_label  = "pod"
+                }
+                rule {
+                  source_labels = ["__meta_kubernetes_pod_container_name"]
+                  target_label  = "container"
+                }
+                rule {
+                  source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+                  target_label  = "app"
+                }
+              }
+        
+              // Follow each container's log, as kubectl logs -f does.
+              loki.source.kubernetes "pods" {
+                targets    = discovery.relabel.pods.output
+                forward_to = [loki.write.default.receiver]
+              }
+        
+              // And send every line to Loki.
+              loki.write "default" {
+                endpoint {
+                  url = "http://loki.monitoring.svc:3100/loki/api/v1/push"
+                }
+              }
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
