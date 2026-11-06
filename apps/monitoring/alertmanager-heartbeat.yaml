@@ -1,0 +1,17 @@
+# The Healthchecks.io ping address for Alertmanager's heartbeat (Monitoring track, Lesson 10),
+# sealed for the monitoring namespace. The real address is in .healthchecks-ping, never in Git.
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: alertmanager-heartbeat
+  namespace: monitoring
+spec:
+  encryptedData:
+    url: AgA1pjXkyqmnC7/CnBX3S3PfyZZvF6vktjgxEPO53diNLXk44JpO0VLzuIHDOIgP5180yd+dmryO1LD8lMVwI8Wbclh8LBGs1vTpA7fK76a3n0t6e8+2fPKbr6z1+duKi3yJbQYLmxV+gysXs1hcJByeFayGtgFSngo07MH5Kb4ceoZyKRfzx701+yNVsPm+j8VptD04902hKYYZsx9RUNGH97TRWYb48pTpormzYYmUBaIxvmSxq9X0n+B+KdRirP4L/um/AuMQ6Vu4LdgBoZZE4iQfQCd+1FsbRww8IOXEiQz1LTkbQZAYr3kWxvZ7ioeFE2z59bThhelN5g5D7i+PdrYnLQ0oGGHRu8RbQkDog94dzJKIfX6iKr5dSHcbheU9y6h3ZE9t3J4T/mKvJ+nk9hTZGoQ492ZCI/4nLToTTayohn26FAy9dp8rgCBL0/wKEtUkHZ5kyo9FQCqt64Ck1b8LOJtPL/Uic5OLpczetOdatNpEZ0aIFaGJgsRWpKI0Sql3cBh0ufa1o2HoV0+BQvQvg8XTRzgNOL6MYgOFfeAHhx8p1S9QLk3gCkMiquhwIIMOLzy/YvZD6oq/rp1dj1ZvGbmrDVaJE+8xvyZ7N2xjwib5u3HbwUz+1xh+bQ8LhbjEWjvWHteF/3ZY6E5uPiVqolSyZJA5RT6b2cTQMt/nwngTIsoVDk+yykLYvelfeBlRu5+WIM8vd7q2NCCZXsbCUqhJ9vdTVyoFbkpfAPNtZe1658S1upmKuQPHMAjTRnjoVRHRKg==
+  template:
+    metadata:
+      creationTimestamp: null
+      name: alertmanager-heartbeat
+      namespace: monitoring
