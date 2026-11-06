@@ -7,7 +7,7 @@ metadata:
     {{- include "bookshop.labels" . | nindent 4 }}
 spec:
   selector:
-    app: {{ .Chart.Name }}
+    {{- include "bookshop.selectorLabels" . | nindent 4 }}
   ports:
     - name: http
       port: 80
