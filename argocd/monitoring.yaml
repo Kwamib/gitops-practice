@@ -21,6 +21,13 @@ spec:
             existingSecret: grafana-admin
             userKey: admin-user
             passwordKey: admin-password
+          # Logs, from Loki (Lesson 9), beside Prometheus in Explore and on dashboards.
+          additionalDataSources:
+            - name: Loki
+              type: loki
+              uid: loki
+              url: http://loki.monitoring.svc:3100
+              access: proxy
         # Where alerts go, how they're grouped, and what hides what (Lesson 8).
         alertmanager:
           alertmanagerSpec:
