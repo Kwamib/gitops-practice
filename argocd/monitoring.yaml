@@ -34,6 +34,7 @@ spec:
             # Mount the sealed Slack address at /etc/alertmanager/secrets/alertmanager-slack/url.
             secrets:
               - alertmanager-slack
+              - alertmanager-heartbeat
           config:
             global:
               resolve_timeout: 5m
@@ -46,9 +47,16 @@ spec:
               group_interval: 1m    # then send changes to the group at most this often
               repeat_interval: 4h   # and remind about a group still firing this often
               routes:
-                # Watchdog always fires and InfoInhibitor is machinery: nobody needs a message (Lesson 10 uses Watchdog).
+                # Watchdog fires all the time Prometheus and Alertmanager are working: send it to the
+                # outside check every minute. When the pings stop, the check says so (Lesson 10).
+                - receiver: heartbeat
+                  matchers: ['alertname = "Watchdog"']
+                  group_wait: 0s
+                  group_interval: 1m
+                  repeat_interval: 1m
+                # InfoInhibitor is machinery: nobody needs a message.
                 - receiver: "null"
-                  matchers: ['alertname =~ "Watchdog|InfoInhibitor"']
+                  matchers: ['alertname = "InfoInhibitor"']
                 # info is worth knowing, not worth a message (Lesson 7).
                 - receiver: "null"
                   matchers: ['severity = "info"']
@@ -67,6 +75,11 @@ spec:
                 equal: [namespace]
             receivers:
               - name: "null"
+              - name: heartbeat
+                # The ping address is a secret too: read from a file, mounted from the sealed Secret.
+                webhook_configs:
+                  - url_file: /etc/alertmanager/secrets/alertmanager-heartbeat/url
+                    send_resolved: false
               - name: bookshop-team
                 # Both: the in-cluster receiver, and Slack.
                 webhook_configs:
