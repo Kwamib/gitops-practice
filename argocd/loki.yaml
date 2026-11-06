@@ -1,0 +1,83 @@
+# Loki (Monitoring track, Lesson 9): stores the cluster's logs and answers LogQL queries.
+# One pod keeping logs on its own disk: fine for a laptop, not for production.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: loki
+  namespace: argocd
+spec:
+  project: default
+  source:
+    # The chart moved here from Grafana's own repository: grafana/loki is now only for
+    # Grafana Enterprise Logs.
+    repoURL: https://grafana-community.github.io/helm-charts
+    chart: loki
+    targetRevision: 21.0.0
+    helm:
+      releaseName: loki
+      valuesObject:
+        # Monolithic: every part of Loki in one pod. Enough for a laptop, up to tens of GB a day.
+        deploymentMode: Monolithic
+        loki:
+          # One tenant, no logins: everything in this cluster shares one set of logs.
+          auth_enabled: false
+          commonConfig:
+            replication_factor: 1
+          # Chunks and index on the pod's own disk, not in a cloud bucket.
+          storage:
+            type: filesystem
+          # How logs are stored and indexed, from this date on. v13 and tsdb are today's format.
+          schemaConfig:
+            configs:
+              - from: "2024-04-01"
+                store: tsdb
+                object_store: filesystem
+                schema: v13
+                index:
+                  prefix: index_
+                  period: 24h
+          # Keep 3 days of logs: the compactor deletes older ones.
+          compactor:
+            retention_enabled: true
+            delete_request_store: filesystem
+          limits_config:
+            retention_period: 72h
+        singleBinary:
+          replicas: 1
+          persistence:
+            size: 2Gi
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+        # The scalable modes' parts: none.
+        read:
+          replicas: 0
+        write:
+          replicas: 0
+        backend:
+          replicas: 0
+        # Extras this lesson doesn't need: a gateway in front, two memcached caches (one asks
+        # for 8 GB of memory), a canary writing test logs, Helm's test, and the rules sidecar.
+        gateway:
+          enabled: false
+        chunksCache:
+          enabled: false
+        resultsCache:
+          enabled: false
+        lokiCanary:
+          enabled: false
+        test:
+          enabled: false
+        sidecar:
+          rules:
+            enabled: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
