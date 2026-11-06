@@ -8,6 +8,7 @@ resources:
   - bookshop-rules.yaml
   - alert-receiver.yaml
   - alertmanager-slack.yaml
+  - alertmanager-heartbeat.yaml
 configMapGenerator:
   # Each dashboard file becomes a ConfigMap with the label Grafana's dashboard sidecar looks for.
   - name: grafana-dashboard-bookshop

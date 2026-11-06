@@ -2,3 +2,5 @@
 .sealed-secrets-key.yaml
 .grafana-admin
 .slack-webhook
+.healthchecks-ping
+.healthchecks-api
