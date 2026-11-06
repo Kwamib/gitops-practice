@@ -28,6 +28,12 @@ spec:
               uid: loki
               url: http://loki.monitoring.svc:3100
               access: proxy
+        # Lesson 10's break: far too little memory, so Prometheus is killed as it starts.
+        prometheus:
+          prometheusSpec:
+            resources:
+              limits:
+                memory: 40Mi
         # Where alerts go, how they're grouped, and what hides what (Lesson 8).
         alertmanager:
           alertmanagerSpec:
