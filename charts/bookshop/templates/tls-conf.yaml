@@ -1,0 +1,20 @@
+{{- if .Values.tls.enabled }}
+# nginx's HTTPS server (Security track, Lesson 8): the same page, on 443, with the
+# certificate from cert-manager. TLS 1.2 and 1.3 only.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-tls-conf
+  labels:
+    {{- include "bookshop.labels" . | nindent 4 }}
+data:
+  tls.conf: |
+    server {
+      listen 443 ssl;
+      ssl_certificate     /etc/nginx/tls/tls.crt;
+      ssl_certificate_key /etc/nginx/tls/tls.key;
+      ssl_protocols       TLSv1.2 TLSv1.3;
+      root  /usr/share/nginx/html;
+      index index.html;
+    }
+{{- end }}

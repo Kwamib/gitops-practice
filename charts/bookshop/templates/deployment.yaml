@@ -18,6 +18,9 @@ spec:
         {{- if .Values.metrics.enabled }}
         checksum/nginx-conf: {{ include (print $.Template.BasePath "/nginx-conf.yaml") . | sha256sum }}
         {{- end }}
+        {{- if .Values.tls.enabled }}
+        checksum/tls-conf: {{ include (print $.Template.BasePath "/tls-conf.yaml") . | sha256sum }}
+        {{- end }}
       labels:
         {{- include "bookshop.labels" . | nindent 8 }}
     spec:
@@ -26,6 +29,9 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
             - containerPort: 80
+            {{- if .Values.tls.enabled }}
+            - containerPort: 443
+            {{- end }}
           {{- if .Values.db.encryptedPassword }}
           env:
             # From the Secret the Sealed Secrets controller makes (Lesson 10).
@@ -42,6 +48,15 @@ spec:
             - name: nginx-conf
               mountPath: /etc/nginx/conf.d/status.conf
               subPath: status.conf
+            {{- end }}
+            {{- if .Values.tls.enabled }}
+            # HTTPS (Security track, Lesson 8): the server block, and the certificate and key.
+            - name: tls-conf
+              mountPath: /etc/nginx/conf.d/tls.conf
+              subPath: tls.conf
+            - name: tls
+              mountPath: /etc/nginx/tls
+              readOnly: true
             {{- end }}
           lifecycle:
             preStop:
@@ -75,4 +90,12 @@ spec:
         - name: nginx-conf
           configMap:
             name: {{ .Release.Name }}-nginx-conf
+        {{- end }}
+        {{- if .Values.tls.enabled }}
+        - name: tls-conf
+          configMap:
+            name: {{ .Release.Name }}-tls-conf
+        - name: tls
+          secret:
+            secretName: {{ .Release.Name }}-tls
         {{- end }}
