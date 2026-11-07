@@ -8,3 +8,6 @@ shop:
   banner: Free delivery on every order this week.
 tls:
   enabled: true
+hardened: true
+networkPolicy:
+  enabled: true

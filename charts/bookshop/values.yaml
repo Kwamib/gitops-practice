@@ -42,3 +42,8 @@ tls:
   issuer: practice-ca   # the ClusterIssuer that signs it
   duration: 24h         # short on purpose, so renewal happens often enough to see
   renewBefore: 8h
+
+hardened: false         # non-root, read-only, no capabilities, no API token (Security track, Lesson 9)
+
+networkPolicy:
+  enabled: false        # only the monitoring namespace may connect (Security track, Lesson 9)

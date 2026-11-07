@@ -14,6 +14,11 @@ spec:
     helm:
       releaseName: alloy
       valuesObject:
+        # The chart's own role can read every Secret in the cluster. This configuration only
+        # reads logs, so it gets a role with just that: apps/monitoring/least-privilege.yaml
+        # (Security track, Lesson 9).
+        rbac:
+          create: false
         # One copy for the whole cluster: it reads logs through the Kubernetes API, so it
         # doesn't need a copy on every node, or access to the nodes' disks.
         controller:
