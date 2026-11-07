@@ -1,0 +1,28 @@
+# The practice certificate authority (Security track, Lesson 8): apps/tls.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tls
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Kwamib/gitops-practice.git
+    targetRevision: main
+    path: apps/tls
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      # The Certificate and ClusterIssuer kinds only exist once cert-manager is installed.
+      - SkipDryRunOnMissingResource=true
+    retry:
+      limit: 10
+      backoff:
+        duration: 15s
+        factor: 2
+        maxDuration: 3m

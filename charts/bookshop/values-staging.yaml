@@ -6,3 +6,5 @@ shop:
   name: The Bookshop (staging)
   version: "2"
   banner: Free delivery on every order this week.
+tls:
+  enabled: true

@@ -12,6 +12,11 @@ spec:
     - name: http
       port: 80
       targetPort: 80
+    {{- if .Values.tls.enabled }}
+    - name: https
+      port: 443
+      targetPort: 443
+    {{- end }}
     {{- if .Values.metrics.enabled }}
     - name: metrics
       port: 9113

@@ -36,3 +36,9 @@ metrics:
   serviceMonitor:
     labels:           # extra labels for the ServiceMonitor
       release: monitoring   # kube-prometheus-stack's Prometheus only picks up ServiceMonitors with this
+
+tls:
+  enabled: false        # HTTPS on 443, with a certificate from cert-manager (Security track, Lesson 8)
+  issuer: practice-ca   # the ClusterIssuer that signs it
+  duration: 24h         # short on purpose, so renewal happens often enough to see
+  renewBefore: 8h
