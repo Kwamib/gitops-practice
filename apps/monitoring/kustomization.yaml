@@ -10,6 +10,7 @@ resources:
   - alertmanager-slack.yaml
   - alertmanager-heartbeat.yaml
   - least-privilege.yaml
+  - loki-audit-rules.yaml
 configMapGenerator:
   # Each dashboard file becomes a ConfigMap with the label Grafana's dashboard sidecar looks for.
   - name: grafana-dashboard-bookshop
