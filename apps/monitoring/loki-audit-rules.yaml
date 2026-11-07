@@ -1,0 +1,43 @@
+# Alert rules on the Kubernetes audit log (Security track, Lesson 10). Loki's ruler runs
+# these LogQL queries every minute and sends anything that fires to Alertmanager.
+# Mounted into Loki at /etc/loki/rules/fake: "fake" is Loki's tenant when logins are off.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loki-audit-rules
+data:
+  audit.yaml: |
+    groups:
+      - name: kubernetes-audit
+        rules:
+          # A Secret read by anyone not on the list of accounts that read Secrets for a living:
+          # kubelets and the control plane, Argo CD, cert-manager, kube-system's controllers,
+          # and two monitoring components. People (kubernetes-admin) are deliberately not on it.
+          - alert: SecretReadByUnexpectedAccount
+            expr: |
+              sum by (user_username, objectRef_namespace, objectRef_name, responseStatus_code) (
+                count_over_time({namespace="kube-system", container="kube-apiserver"}
+                  |= "audit.k8s.io" |= `"resource":"secrets"`
+                  | json
+                  | verb =~ "get|list"
+                  | user_username !~ "system:(node|kube-controller-manager|kube-scheduler|apiserver).*|system:serviceaccount:(argocd|cert-manager|kube-system):.*|system:serviceaccount:monitoring:monitoring-kube-(prometheus-operator|state-metrics)"
+                [5m])
+              ) > 0
+            labels:
+              severity: warning
+            annotations:
+              summary: "{{ $labels.user_username }} read Secrets in {{ $labels.objectRef_namespace }} (answer {{ $labels.responseStatus_code }})"
+          # A service account asking for something it isn't allowed: a token being tried out.
+          - alert: ServiceAccountForbidden
+            expr: |
+              sum by (user_username, verb, objectRef_resource, objectRef_namespace) (
+                count_over_time({namespace="kube-system", container="kube-apiserver"}
+                  |= "audit.k8s.io" |= `"code":403`
+                  | json
+                  | user_username =~ "system:serviceaccount:.*"
+                [5m])
+              ) > 0
+            labels:
+              severity: warning
+            annotations:
+              summary: "{{ $labels.user_username }} was refused {{ $labels.verb }} {{ $labels.objectRef_resource }} in {{ $labels.objectRef_namespace }}"

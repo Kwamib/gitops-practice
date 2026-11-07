@@ -42,8 +42,28 @@ spec:
             delete_request_store: filesystem
           limits_config:
             retention_period: 72h
+          # Alert rules on logs (Security track, Lesson 10): read from files under
+          # /etc/loki/rules, sent to Alertmanager. The rules are apps/monitoring/loki-audit-rules.yaml.
+          rulerConfig:
+            alertmanager_url: http://monitoring-kube-prometheus-alertmanager.monitoring.svc:9093
+            rule_path: /var/loki/rules-temp
+            storage:
+              type: local
+              local:
+                directory: /etc/loki/rules
         singleBinary:
           replicas: 1
+          # The audit alert rules (Security track, Lesson 10). Not the chart's ruler.directories:
+          # in Monolithic mode it mounts a ConfigMap the chart never creates.
+          extraVolumes:
+            - name: audit-rules
+              configMap:
+                name: loki-audit-rules
+                optional: true
+          extraVolumeMounts:
+            - name: audit-rules
+              mountPath: /etc/loki/rules/fake
+              readOnly: true
           persistence:
             size: 2Gi
           resources:
