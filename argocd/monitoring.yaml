@@ -15,6 +15,15 @@ spec:
       releaseName: monitoring
       valuesObject:
         grafana:
+          # Least privilege (Security track, Lesson 9): the sidecars load dashboards and data
+          # sources from ConfigMaps only, and Grafana's role may read ConfigMaps, not Secrets.
+          sidecar:
+            dashboards:
+              resource: configmap
+            datasources:
+              resource: configmap
+          rbac:
+            useExistingClusterRole: grafana-read-configmaps
           admin:
             # Use the sealed login from apps/monitoring, rather than a password the
             # chart makes up again every time Argo CD renders it.

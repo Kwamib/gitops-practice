@@ -24,9 +24,31 @@ spec:
       labels:
         {{- include "bookshop.labels" . | nindent 8 }}
     spec:
+      {{- if .Values.hardened }}
+      # Least privilege (Security track, Lesson 9). The bookshop never calls the Kubernetes
+      # API, so it gets no token, and nothing in it runs as root.
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101     # the nginx user in the nginx image
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+        sysctls:
+          # Lets a non-root process listen on ports below 1024 (80 and 443), in this pod only.
+          - name: net.ipv4.ip_unprivileged_port_start
+            value: "0"
+      {{- end }}
       containers:
         - name: nginx
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          {{- if .Values.hardened }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          {{- end }}
           ports:
             - containerPort: 80
             {{- if .Values.tls.enabled }}
@@ -44,6 +66,15 @@ spec:
           volumeMounts:
             - name: page
               mountPath: /usr/share/nginx/html
+            {{- if .Values.hardened }}
+            # The only places nginx may write: its cache, its process ID, and temporary files.
+            - name: cache
+              mountPath: /var/cache/nginx
+            - name: run
+              mountPath: /run
+            - name: tmp
+              mountPath: /tmp
+            {{- end }}
             {{- if .Values.metrics.enabled }}
             - name: nginx-conf
               mountPath: /etc/nginx/conf.d/status.conf
@@ -74,6 +105,13 @@ spec:
         # Reads nginx's status page and serves it as Prometheus metrics (Monitoring track, Lesson 4).
         - name: exporter
           image: "{{ .Values.metrics.image.repository }}:{{ .Values.metrics.image.tag }}"
+          {{- if .Values.hardened }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          {{- end }}
           args:
             - --nginx.scrape-uri=http://localhost:8080/stub_status
           ports:
@@ -98,4 +136,12 @@ spec:
         - name: tls
           secret:
             secretName: {{ .Release.Name }}-tls
+        {{- end }}
+        {{- if .Values.hardened }}
+        - name: cache
+          emptyDir: {}
+        - name: run
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
         {{- end }}
